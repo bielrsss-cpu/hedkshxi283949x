@@ -1,0 +1,8 @@
+---
+import Base from '../layouts/Base.astro';
+import Redacao from '../islands/Redacao';
+---
+<Base titulo="Redação">
+  <h1>Redação</h1>
+  <Redacao client:only="preact" />
+</Base>

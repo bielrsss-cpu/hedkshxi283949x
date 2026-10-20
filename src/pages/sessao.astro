@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import Sessao from '../islands/Sessao';
+import { carregarCronograma } from '../lib/conteudo';
+const { semanas } = carregarCronograma();
+---
+<Base titulo="Sessão de estudo">
+  <h1>Sessão de estudo</h1>
+  <Sessao client:only="preact" semanas={semanas} />
+</Base>
+<style is:global>
+  .relogio { font-size: 3.4rem; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; margin: 6px 0 10px; }
+  .pomodoro.pausa .relogio { color: var(--ok); }
+</style>

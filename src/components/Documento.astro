@@ -1,0 +1,12 @@
+---
+import type { ItemIndice } from '../lib/conteudo';
+interface Props { html: string; indice: ItemIndice[] }
+const { html, indice } = Astro.props;
+---
+{indice.length > 0 && (
+  <details class="cartao indice-doc">
+    <summary><strong>Índice</strong></summary>
+    {indice.map((i) => <a class={`n${i.nivel}`} href={`#${i.id}`}>{i.texto}</a>)}
+  </details>
+)}
+<article class="doc cartao"><Fragment set:html={html} /></article>

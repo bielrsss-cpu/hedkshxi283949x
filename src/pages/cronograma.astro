@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import Cronograma from '../islands/Cronograma';
+import { carregarCronograma } from '../lib/conteudo';
+const { semanas, prazos, introHtml, meta } = carregarCronograma();
+---
+<Base titulo="Cronograma">
+  <h1>Cronograma</h1>
+  <details class="cartao">
+    <summary><strong>Metas, fases e rotina</strong> <span class="sutil pequeno">· {meta.carga_referencia}</span></summary>
+    <div class="doc"><Fragment set:html={introHtml} /></div>
+  </details>
+  <Cronograma client:only="preact" semanas={semanas} prazos={prazos} />
+</Base>
+
+<style is:global>
+  .semana summary { cursor: pointer; list-style-position: outside; }
+  .semana.atual { border-color: var(--primaria); box-shadow: 0 0 0 1px var(--primaria); }
+  .semana ul { margin-top: 10px; }
+  .tarefa { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--borda); }
+  .tarefa-check input { width: 22px; height: 22px; margin-top: 2px; }
+  .tarefa-corpo { flex: 1; min-width: 0; }
+  .tarefa.feita .tarefa-texto { text-decoration: line-through; color: var(--texto-2); }
+  .tarefa-acoes { margin-top: 4px; }
+  .selo.etq-DIR { background: var(--primaria-suave); color: var(--primaria); }
+  .selo.etq-POR, .selo.etq-RED { background: var(--ok-suave); color: var(--ok); }
+  .selo.etq-PRAZO, .selo.etq-SIM { background: var(--perigo-suave); color: var(--perigo); }
+  .selo.etq-REV { background: var(--alerta-suave); color: var(--alerta); }
+</style>

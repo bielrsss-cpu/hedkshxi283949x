@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import Documento from '../components/Documento.astro';
+import { carregarDocumento } from '../lib/conteudo';
+const { html, indice } = carregarDocumento('00-edital/edital.md', { quebras: true });
+---
+<Base titulo="Edital">
+  <div class="topo"><h1>Edital</h1><a class="btn pequeno" href="/analise">Análise de incidência</a></div>
+  <div class="cartao">
+    <label for="busca-doc">Buscar no edital</label>
+    <div class="linha">
+      <input id="busca-doc" type="search" placeholder="ex.: redação, isenção, circunscrição" style="flex: 1" />
+      <span id="busca-res" class="sutil pequeno"></span>
+    </div>
+  </div>
+  <Documento html={html} indice={indice} />
+  <script>
+    import { ligarBuscaNoDocumento } from '../lib/busca-doc';
+    ligarBuscaNoDocumento();
+  </script>
+</Base>

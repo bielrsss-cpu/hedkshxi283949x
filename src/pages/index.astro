@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import Painel from '../islands/Painel';
+import { carregarCronograma } from '../lib/conteudo';
+const { semanas } = carregarCronograma();
+---
+<Base titulo="Painel" largo>
+  <div class="topo">
+    <h1>Painel</h1>
+    <a class="btn primario" href="/sessao">Nova sessão</a>
+  </div>
+  <Painel client:only="preact" semanas={semanas} />
+</Base>

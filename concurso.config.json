@@ -1,0 +1,89 @@
+{
+  "_leia": "Tudo o que muda de um concurso para outro fica aqui. Veja ADAPTAR.md. Os valores abaixo são o EXEMPLO (TJSP Escrevente 2026/2027).",
+  "id": "caderno",
+  "nome_site": "Caderno TJSP",
+  "orgao": "TJ-SP",
+  "cargo": "Escrevente Técnico Judiciário",
+  "banca": "VUNESP",
+  "edital": "Edital nº 02/2026",
+  "prova": {
+    "data": "2027-03-14",
+    "descricao": "14/03/2027, à tarde",
+    "duracao_min": 300
+  },
+  "disciplinas": [
+    ["portugues", "Português"],
+    ["constitucional", "Constitucional"],
+    ["penal", "Penal"],
+    ["processo-penal", "Processo Penal"],
+    ["processo-civil", "Processo Civil"],
+    ["administrativo", "Administrativo"],
+    ["legislacao-interna", "Legislação interna"],
+    ["informatica", "Informática"],
+    ["raciocinio-logico", "Raciocínio Lógico"],
+    ["matematica", "Matemática"],
+    ["atualidades", "Atualidades/EPD"]
+  ],
+  "objetiva": {
+    "total": 70,
+    "meta": 53,
+    "nota_max": 10,
+    "blocos": [
+      { "id": "bloco_I_portugues", "nome": "Bloco I · Português", "total": 16, "minimo": 8, "disciplinas": ["portugues"] },
+      { "id": "bloco_II_direito", "nome": "Bloco II · Direito", "total": 30, "minimo": 15,
+        "disciplinas": ["penal", "processo-penal", "processo-civil", "constitucional", "administrativo", "legislacao-interna"] },
+      { "id": "bloco_III_gerais", "nome": "Bloco III · Conhecimentos gerais", "total": 24,
+        "disciplinas": ["atualidades", "matematica", "informatica", "raciocinio-logico"] }
+    ],
+    "questoes_por_disciplina": {
+      "portugues": 16, "penal": 4, "processo-penal": 5, "processo-civil": 5, "constitucional": 5,
+      "administrativo": 6, "legislacao-interna": 5, "atualidades": 4, "matematica": 4, "informatica": 9, "raciocinio-logico": 7
+    }
+  },
+  "redacao": {
+    "existe": true,
+    "nota_max": 40,
+    "minimo": 24,
+    "criterios": [
+      { "id": "tema", "nome": "Tema", "dica": "Atende ao tema proposto? Fuga total = zero." },
+      { "id": "estrutura_coerencia", "nome": "Estrutura e coerência", "dica": "Gênero, tese clara, macroestrutura, coerência e repertório." },
+      { "id": "lingua_coesao", "nome": "Língua e coesão", "dica": "Norma-padrão, registro formal, conectivos, paragrafação." }
+    ],
+    "avisos_linhas": [
+      { "ate": 7, "tipo": "perigo", "texto": "Até 7 linhas: a banca atribui nota zero." },
+      { "ate": 20, "tipo": "alerta", "texto": "Com 20 linhas ou menos, o texto não alcança a nota máxima em língua e coesão." }
+    ]
+  },
+  "estudo": {
+    "minutos_por_dia": 150,
+    "pomodoro_dias_uteis": 45,
+    "pomodoro_fim_de_semana": 50,
+    "pausa": 10
+  },
+  "cronograma": {
+    "etiquetas": {
+      "DIR": { "nome": "Direito" },
+      "POR": { "nome": "Português", "disciplina": "portugues" },
+      "INF": { "nome": "Informática", "disciplina": "informatica" },
+      "RL": { "nome": "Raciocínio Lógico", "disciplina": "raciocinio-logico" },
+      "MAT": { "nome": "Matemática", "disciplina": "matematica" },
+      "RL/MAT": { "nome": "RL/Matemática" },
+      "ATU": { "nome": "Atualidades", "disciplina": "atualidades" },
+      "RED": { "nome": "Redação", "disciplina": "portugues", "tipo": "redacao" },
+      "REV": { "nome": "Revisão", "tipo": "revisao" },
+      "SIM": { "nome": "Simulado", "tipo": "simulado" },
+      "PRAZO": { "nome": "Prazo" }
+    },
+    "palavras_chave": {
+      "constitucional": "\\bCF\\b|Constitui",
+      "processo-penal": "\\bCPP\\b|JECRIM|Processo Penal",
+      "processo-civil": "\\bCPC\\b|12\\.153|Processo Civil|\\bJEC\\b",
+      "penal": "\\bCP\\b|Penal",
+      "administrativo": "Estatuto|10\\.261|Improbidade|8\\.429",
+      "legislacao-interna": "NSCGJ|Regimento|Res\\.|Resolução|1\\.111|eproc|teletrabalho",
+      "atualidades": "EPD|13\\.146|Atualidades",
+      "portugues": "Portugu|interpreta|crase|reda",
+      "informatica": "Inform|Windows|Word|Excel"
+    }
+  }
+}

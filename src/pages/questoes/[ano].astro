@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import Resolver from '../../islands/Resolver';
+import { listarProvas } from '../../lib/questoes';
+
+export function getStaticPaths() {
+  return listarProvas().map((p) => ({ params: { ano: p.ano }, props: { prova: p } }));
+}
+const { prova } = Astro.props;
+---
+<Base titulo={`Questões ${prova.ano}`}>
+  <div class="topo">
+    <h1>{prova.meta.titulo ?? prova.ano}</h1>
+    <a class="btn pequeno" href="/questoes">Provas</a>
+  </div>
+  <p class="sutil pequeno">Gabarito: {prova.meta.gabarito}</p>
+  <Resolver client:only="preact" prova={prova} />
+</Base>
+<style is:global>
+  .texto-apoio { background: var(--bg-sutil); border-radius: 8px; padding: 8px 12px; margin: 10px 0; }
+  .texto-apoio summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+  .texto-apoio .doc { font-family: var(--fonte-lei); }
+  .enunciado { margin: 10px 0; }
+  .enunciado img { display: block; margin: 8px auto; max-width: min(100%, 360px); background: #fff; border-radius: 6px; }
+  .enunciado table, .texto-apoio table { width: auto; display: block; overflow-x: auto; white-space: nowrap; max-width: 100%; }
+  .alternativas { display: grid; gap: 8px; }
+  .alt { display: flex; gap: 10px; align-items: flex-start; text-align: left; width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-elev); color: var(--texto); font: inherit; cursor: pointer; }
+  .alt:hover:not(:disabled) { background: var(--bg-sutil); }
+  .alt:disabled { cursor: default; }
+  .alt-letra { flex: none; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--bg-sutil); font-weight: 700; font-size: 0.85rem; }
+  .alt.marcada { border-color: var(--primaria); box-shadow: 0 0 0 1px var(--primaria); }
+  .alt.marcada .alt-letra { background: var(--primaria); color: var(--primaria-texto); }
+  .alt.certa { border-color: var(--ok); background: var(--ok-suave); }
+  .alt.certa .alt-letra { background: var(--ok); color: #fff; }
+  .alt.errada { border-color: var(--perigo); background: var(--perigo-suave); }
+  .alt.errada .alt-letra { background: var(--perigo); color: #fff; }
+  .mapa { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 4px; margin-top: 10px; }
+  .mapa-q { min-height: 36px; border-radius: 6px; border: 1px solid var(--borda); background: var(--bg-elev); color: var(--texto); font: inherit; font-size: 0.8rem; cursor: pointer; }
+  .mapa-q.certa { background: var(--ok-suave); border-color: var(--ok); }
+  .mapa-q.errada { background: var(--perigo-suave); border-color: var(--perigo); }
+  .mapa-q.atual { outline: 2px solid var(--primaria); }
+  .mapa-q:disabled { opacity: 0.35; }
+  .nav-questoes { margin: 4px 0 16px; }
+</style>

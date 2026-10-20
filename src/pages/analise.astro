@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import Documento from '../components/Documento.astro';
+import { carregarDocumento } from '../lib/conteudo';
+const { html, indice } = carregarDocumento('01-analise/analise.md');
+---
+<Base titulo="Análise de incidência">
+  <div class="topo"><h1>Análise de incidência</h1><a class="btn pequeno" href="/edital">Edital</a></div>
+  <Documento html={html} indice={indice} />
+</Base>

@@ -1,0 +1,8 @@
+---
+import Base from '../layouts/Base.astro';
+import Erros from '../islands/Erros';
+---
+<Base titulo="Caderno de erros">
+  <h1>Caderno de erros</h1>
+  <Erros client:only="preact" />
+</Base>

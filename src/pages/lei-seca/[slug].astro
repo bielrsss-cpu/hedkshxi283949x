@@ -1,0 +1,157 @@
+---
+import Base from '../../layouts/Base.astro';
+import { carregarNorma, listarNormas } from '../../lib/conteudo';
+import { NOME_DISCIPLINA } from '../../lib/disciplinas';
+
+export function getStaticPaths() {
+  return listarNormas().map((n) => ({ params: { slug: n.slug } }));
+}
+
+const { slug } = Astro.params as { slug: string };
+const { meta, introHtml, blocos } = carregarNorma(slug);
+const titulos = blocos.filter((b) => b.tipo === 'titulo');
+const totalArtigos = blocos.filter((b) => b.tipo === 'artigo').length;
+---
+<Base titulo={meta.titulo} largo>
+  <div class="leiseca" data-norma={slug} data-disciplina={meta.disciplina}>
+    <aside class="ls-lateral">
+      <div class="ls-lateral-int">
+        <a href="/lei-seca" class="pequeno">← Todas as normas</a>
+        <p class="pequeno sutil" style="margin: 8px 0">{totalArtigos} dispositivos</p>
+        {titulos.length > 0 && (
+          <nav class="ls-indice" aria-label="Índice da norma">
+            {titulos.map((t) => t.tipo === 'titulo' && <a class={`n${t.nivel}`} href={`#${t.id}`}>{t.texto}</a>)}
+          </nav>
+        )}
+      </div>
+    </aside>
+
+    <div class="ls-principal">
+      <header class="ls-cabecalho">
+        <div class="linha">
+          <span class="selo info">{NOME_DISCIPLINA[meta.disciplina]}</span>
+          {meta.pendente && <span class="selo pendente">PENDENTE</span>}
+          {meta.item_edital && <span class="selo">{meta.item_edital}</span>}
+        </div>
+        <h1>{meta.titulo}</h1>
+        {meta.recorte_edital && <p class="pequeno"><strong>Recorte do edital:</strong> {meta.recorte_edital}</p>}
+        {meta.fonte_oficial && (
+          <p class="pequeno sutil">
+            Fonte: <a href={meta.fonte_oficial} target="_blank" rel="noopener">{meta.fonte_oficial}</a>
+            {meta.texto_obtido_em && <> · texto obtido em {meta.texto_obtido_em}</>}
+          </p>
+        )}
+      </header>
+
+      {meta.pendente ? (
+        <div class="cartao doc">
+          <p class="aviso"><strong>PENDENTE.</strong> O texto desta norma ainda não foi baixado da fonte oficial.</p>
+          <Fragment set:html={introHtml} />
+        </div>
+      ) : (
+        <>
+          <div class="ls-ferramentas cartao">
+            <div class="linha">
+              <input id="ls-busca" type="search" placeholder="art 312  ou  palavra" autocomplete="off" style="flex: 1 1 200px" />
+              <select id="ls-filtro" aria-label="Filtrar" style="flex: 0 1 170px">
+                <option value="">Todos</option>
+                <option value="nao-lido">Não lidos</option>
+                <option value="lido">Lidos</option>
+                <option value="revisar">Para revisar</option>
+                <option value="dominado">Dominados</option>
+                <option value="grifo">Com grifo</option>
+                <option value="nota">Com anotação</option>
+                <option value="caiu">Já caíram em prova</option>
+              </select>
+              {titulos.length > 0 && <button class="btn so-celular-ls" type="button" id="ls-abrir-indice">Índice</button>}
+            </div>
+            <div class="linha entre pequeno sutil" style="margin-top: 6px">
+              <span id="ls-contagem"></span>
+              <span id="ls-progresso"></span>
+            </div>
+          </div>
+
+          {introHtml.trim() && <div class="ls-intro"><Fragment set:html={introHtml} /></div>}
+
+          <div class="ls-texto" id="ls-texto">
+            {blocos.map((b) =>
+              b.tipo === 'titulo' ? (
+                <div class={`ls-titulo n${b.nivel}`} id={b.id}>{b.texto}</div>
+              ) : (
+                <section class="art" id={b.id} data-art={b.id}>
+                  <header class="art-cab">
+                    <a class="art-rotulo" href={`#${b.id}`}>{b.rotulo}</a>
+                    <span class="art-selos"></span>
+                    <button class="btn-icone art-mais" type="button" aria-label={`Marcações do ${b.rotulo}`}>⋯</button>
+                  </header>
+                  <div class="art-corpo"><Fragment set:html={b.html} /></div>
+                </section>
+              ),
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+
+  <div class="barra-grifo" id="barra-grifo" hidden>
+    <button class="btn primario" type="button" data-g="grifar">Grifar</button>
+    <button class="btn" type="button" data-g="remover" hidden>Remover grifo</button>
+    <button class="btn" type="button" data-g="cancelar">Cancelar</button>
+  </div>
+
+  {!meta.pendente && (
+    <script>
+      import { iniciarLeiSeca } from '../../lib/leiseca';
+      iniciarLeiSeca();
+    </script>
+  )}
+</Base>
+
+<style is:global>
+  .leiseca { display: block; }
+  .ls-lateral { display: none; }
+  .ls-indice a { display: block; text-decoration: none; padding: 3px 0; font-size: 0.84rem; color: var(--texto-2); }
+  .ls-indice a:hover { color: var(--primaria); }
+  .ls-indice .n2 { font-weight: 700; color: var(--texto); }
+  .ls-indice .n4 { padding-left: 8px; font-weight: 600; }
+  .ls-indice .n5 { padding-left: 18px; }
+  .ls-cabecalho h1 { margin: 8px 0; }
+  .ls-ferramentas { position: sticky; top: 0; z-index: 10; }
+  .ls-texto { font-family: var(--fonte-lei); font-size: 1.04rem; line-height: 1.65; }
+  .ls-titulo { font-family: var(--fonte); text-align: center; color: var(--texto-2); margin: 2rem 0 0.6rem; scroll-margin-top: 120px; }
+  .ls-titulo.n2 { font-weight: 800; color: var(--texto); }
+  .ls-titulo.n3, .ls-titulo.n4 { font-weight: 700; color: var(--texto); }
+  .ls-titulo.n5 { font-weight: 600; font-size: 0.95rem; }
+  .art { padding: 8px 0 4px; border-bottom: 1px solid var(--borda); scroll-margin-top: 120px; }
+  .art-cab { display: flex; align-items: center; gap: 8px; font-family: var(--fonte); }
+  .art-rotulo { font-weight: 700; color: var(--texto); text-decoration: none; }
+  .art-selos { flex: 1; display: flex; gap: 4px; flex-wrap: wrap; }
+  .art-mais { font-size: 1.2rem; line-height: 1; }
+  .art-corpo p { margin: 0.45rem 0; }
+  .art-corpo em:first-child { color: var(--texto-2); }
+  .art.oculto { display: none; }
+  .art.estado-dominado .art-rotulo { color: var(--ok); }
+  .art.estado-revisar .art-rotulo { color: var(--alerta); }
+  .art.estado-lido .art-rotulo::after { content: ' ✓'; color: var(--texto-2); font-weight: 400; }
+  mark.grifo { background: var(--grifo); color: var(--grifo-texto); border-radius: 2px; padding: 0 1px; cursor: pointer; }
+  .art-nota { font-family: var(--fonte); font-size: 0.9rem; background: var(--primaria-suave); border-radius: 8px; padding: 8px 10px; margin: 6px 0; white-space: pre-wrap; }
+  .art-painel { font-family: var(--fonte); font-size: 0.9rem; background: var(--bg-sutil); border-radius: 8px; padding: 10px; margin: 6px 0; }
+  .art-painel .estados { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .art-painel .estados button[aria-pressed='true'] { background: var(--primaria); color: var(--primaria-texto); border-color: var(--primaria); }
+  .barra-grifo {
+    position: fixed; left: 0; right: 0; bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); z-index: 60;
+    display: flex; gap: 8px; justify-content: center; padding: 10px; background: var(--bg-elev); border-top: 1px solid var(--borda);
+    box-shadow: 0 -4px 12px rgb(0 0 0 / 0.1);
+  }
+  .barra-grifo[hidden] { display: none; }
+  .ls-gaveta { position: fixed; inset: 0; z-index: 70; background: rgb(0 0 0 / 0.4); }
+  .ls-gaveta > div { position: absolute; top: 0; bottom: 0; left: 0; width: min(86vw, 340px); background: var(--bg-elev); padding: 16px; overflow-y: auto; }
+  @media (min-width: 900px) {
+    .leiseca { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; }
+    .ls-lateral { display: block; }
+    .ls-lateral-int { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; padding-right: 6px; }
+    .so-celular-ls { display: none; }
+    .barra-grifo { bottom: 0; left: 220px; }
+  }
+</style>

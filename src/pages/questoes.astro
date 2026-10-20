@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import ListaProvas from '../islands/ListaProvas';
+import { listarProvas } from '../lib/questoes';
+const provas = listarProvas().map((p) => {
+  const disciplinas: Record<string, number> = {};
+  const discDe: Record<number, string> = {};
+  for (const q of p.questoes) {
+    disciplinas[q.disciplina] = (disciplinas[q.disciplina] ?? 0) + 1;
+    discDe[q.n] = q.disciplina;
+  }
+  return { ano: p.ano, titulo: p.meta.titulo ?? p.ano, total: p.questoes.length, disciplinas, discDe };
+});
+---
+<Base titulo="Questões">
+  <h1>Questões de provas anteriores</h1>
+  <p class="sutil pequeno">Ao errar, a questão vai automaticamente para o caderno de erros, com o artigo da lei seca quando houver.</p>
+  <ListaProvas client:only="preact" provas={provas} />
+  <p class="sutil pequeno">Para incluir provas, veja <code>caderno/08-provas/README.md</code>.</p>
+</Base>

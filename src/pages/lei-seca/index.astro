@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import { carregarNorma, listarNormas } from '../../lib/conteudo';
+import { NOME_DISCIPLINA } from '../../lib/disciplinas';
+const normas = listarNormas().map((n) => ({
+  ...n,
+  total: carregarNorma(n.slug).blocos.filter((b) => b.tipo === 'artigo').length,
+}));
+const nomes = Object.fromEntries(normas.map((n) => [n.slug, n.titulo]));
+---
+<Base titulo="Lei seca">
+  <h1>Lei seca</h1>
+  <div class="cartao">
+    <label for="busca-global">Buscar em todas as normas</label>
+    <input id="busca-global" type="search" placeholder="art 312  ·  peculato  ·  citação por edital" autocomplete="off" />
+    <div id="resultados-global" class="pilha" style="margin-top: 10px"></div>
+  </div>
+  <ul class="lista-limpa pilha" id="lista-normas">
+    {normas.map((n) => (
+      <li>
+        <a class="cartao norma-item" href={`/lei-seca/${n.slug}`} data-slug={n.slug} data-total={n.total}>
+          <div class="linha entre">
+            <span class="selo info">{NOME_DISCIPLINA[n.disciplina]}</span>
+            {n.pendente ? <span class="selo pendente">PENDENTE</span> : <span class="sutil pequeno">{n.total} dispositivos</span>}
+          </div>
+          <strong class="titulo-norma">{n.titulo}</strong>
+          {n.recorte_edital && <div class="sutil pequeno">Recorte: {n.recorte_edital}</div>}
+          {!n.pendente && (
+            <div class="progresso-norma" hidden>
+              <div class="barra" style="margin-top: 8px"><span style="width: 0%"></span></div>
+              <div class="sutil pequeno resumo"></div>
+            </div>
+          )}
+        </a>
+      </li>
+    ))}
+  </ul>
+  <script type="application/json" id="nomes-normas" set:html={JSON.stringify(nomes)} />
+  <script>
+    import { iniciarIndiceLeiSeca } from '../../lib/leiseca-indice';
+    iniciarIndiceLeiSeca();
+  </script>
+</Base>
+<style>
+  .norma-item { display: block; text-decoration: none; color: inherit; margin: 0; }
+  .titulo-norma { display: block; margin: 6px 0 2px; }
+</style>

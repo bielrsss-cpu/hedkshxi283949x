@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro';
+import { CONFIG } from '../lib/config';
+---
+<Base titulo="Entrar" semNav>
+  <div style="max-width: 360px; margin: 12vh auto 0">
+    <h1>{CONFIG.nome_site}</h1>
+    <p class="sutil">{CONFIG.cargo} · {CONFIG.orgao} · prova em {CONFIG.prova.descricao}</p>
+    <form id="form-login" class="cartao">
+      <div class="campo">
+        <label for="usuario">Usuário</label>
+        <input id="usuario" name="usuario" autocomplete="username" autocapitalize="none" required />
+      </div>
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input id="senha" name="senha" type="password" autocomplete="current-password" required />
+      </div>
+      <p id="erro" class="aviso perigo" hidden></p>
+      <button class="btn primario" style="width: 100%" type="submit">Entrar</button>
+    </form>
+  </div>
+  <script>
+    const form = document.getElementById('form-login') as HTMLFormElement;
+    const erro = document.getElementById('erro')!;
+    const params = new URLSearchParams(location.search);
+    const volta = params.get('volta');
+    const destino = volta && volta.startsWith('/') && !volta.startsWith('//') ? volta : '/';
+
+    // Já está logado? (cookie válido)
+    fetch('/api/eu', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.usuario) {
+          localStorage.setItem('caderno_usuario', d.usuario);
+          location.replace(destino);
+        }
+      })
+      .catch(() => {});
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      erro.hidden = true;
+      const botao = form.querySelector('button')!;
+      botao.disabled = true;
+      try {
+        const r = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ usuario: form.usuario.value, senha: form.senha.value }),
+        });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.erro || 'Não foi possível entrar.');
+        localStorage.setItem('caderno_usuario', d.usuario);
+        location.replace(destino);
+      } catch (err) {
+        erro.textContent = navigator.onLine ? (err as Error).message : 'Sem conexão. O primeiro login precisa de internet.';
+        erro.hidden = false;
+      } finally {
+        botao.disabled = false;
+      }
+    });
+  </script>
+</Base>
